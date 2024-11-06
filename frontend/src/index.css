@@ -64,3 +64,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+h1 {
+  @apply text-zinc-100 text-2xl font-bold;
+  @apply m-5;
+  font-size: 2rem;
+}
