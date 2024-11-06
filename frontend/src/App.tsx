@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/command"
 import ItemOverview from "@/components/pages/ItemOverview";
 
-
 interface BrandsResponse {
   brands: string[];
 }
@@ -18,6 +17,8 @@ interface BrandsResponse {
 function App() {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [brands, setBrands] = useState<string[]>([]);
+  const [filteredBrands, setFilteredBrands] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -25,6 +26,8 @@ function App() {
         const response = await fetch("http://localhost:8000/brands");
         const data: BrandsResponse = await response.json();
         setBrands(data.brands);
+        // Initially show only first 15 brands
+        setFilteredBrands(data.brands.slice(0, 15));
       } catch (error) {
         console.error('Error fetching brands:', error);
       }
@@ -33,6 +36,21 @@ function App() {
     fetchBrands();
   }, []);
 
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
+    
+    if (value.trim() === "") {
+      // If search is empty, show first 15 brands
+      setFilteredBrands(brands.slice(0, 15));
+    } else {
+      // Filter brands based on search query
+      const filtered = brands.filter(brand => 
+        brand.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredBrands(filtered);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-zinc-950 p-4">
       <div className={`transition-all duration-300 ${selectedBrand ? 'pt-4' : 'flex items-center justify-center min-h-screen'}`}>
@@ -40,6 +58,8 @@ function App() {
           <CommandInput
             placeholder="Search for a brand..."
             className="border-none focus:ring-0 text-zinc-100 text-md h-[60px]"
+            value={searchQuery}
+            onValueChange={handleSearch}
             onFocus={() => {
               setSelectedBrand(null);
             }}
@@ -48,7 +68,7 @@ function App() {
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup heading="Brands">
-                {brands.map((brand) => (
+                {filteredBrands.map((brand) => (
                   <CommandItem
                     key={brand}
                     onSelect={() => setSelectedBrand(brand)}
@@ -63,13 +83,9 @@ function App() {
         </Command>
       </div>
 
-      {selectedBrand && (
-        <div className="mt-8">
-          <ItemOverview brand={selectedBrand} />
-        </div>
-      )}
+      {selectedBrand && <ItemOverview brand={selectedBrand} />}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
