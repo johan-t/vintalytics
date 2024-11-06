@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from backend.modules.data_loader import load_data
 from backend.modules.price_analysis import calculate_average_price
