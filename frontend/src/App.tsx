@@ -1,34 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+
+const searchItems = [
+  {
+    category: "Brands",
+    items: [
+      { title: "Zara", url: "#zara" },
+      { title: "H&M", url: "#h&m" },
+      { title: "Uniqlo", url: "#uniqlo" },
+    ],
+  }
+]
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="min-h-screen w-full bg-zinc-950 flex items-center justify-center p-4">
+      <Command className="rounded-lg border max-w-lg w-full border-zinc-800 bg-zinc-950">
+        <CommandInput
+          placeholder="Search for a brand..."
+          className="border-none focus:ring-0 text-zinc-100 text-md h-[60px]"
+        />
+        <CommandList>
+          <CommandEmpty >No results found.</CommandEmpty>
+          {searchItems.map((section) => (
+            <CommandGroup key={section.category} heading={section.category}>
+              {section.items.map((item) => (
+                <CommandItem
+                  key={item.title}
+                  onSelect={() => window.location.href = item.url}
+                  className="text-zinc-100 cursor-pointer"
+                >
+                  {item.title}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ))}
+        </CommandList>
+      </Command>
+    </div>
   )
 }
 
