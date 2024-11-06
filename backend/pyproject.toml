@@ -1,0 +1,11 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Backend for vintalytics"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.4",
+    "pandas>=2.0.0",
+    "uvicorn>=0.27.0",
+]
