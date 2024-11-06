@@ -34,23 +34,26 @@ function App() {
           <CommandInput
             placeholder="Search for a brand..."
             className="border-none focus:ring-0 text-zinc-100 text-md h-[60px]"
+            onFocus={() => setSelectedBrand(null)}
           />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            {searchItems.map((section) => (
-              <CommandGroup key={section.category} heading={section.category}>
-                {section.items.map((item) => (
-                  <CommandItem
-                    key={item.title}
-                    onSelect={() => setSelectedBrand(item.title)}
-                    className="text-zinc-100 cursor-pointer"
-                  >
-                    {item.title}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            ))}
-          </CommandList>
+          {!selectedBrand && (
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              {searchItems.map((section) => (
+                <CommandGroup key={section.category} heading={section.category}>
+                  {section.items.map((item) => (
+                    <CommandItem
+                      key={item.title}
+                      onSelect={() => setSelectedBrand(item.title)}
+                      className="text-zinc-100 cursor-pointer"
+                    >
+                      {item.title}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              ))}
+            </CommandList>
+          )}
         </Command>
       </div>
 
