@@ -2,7 +2,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from backend.modules.data_loader import load_data
 from backend.modules.price_analysis import calculate_average_price
-from backend.modules.listings_analysis import count_brand_listings
+from backend.modules.listings_analysis import get_listings_by_timeframe
+from typing import Literal, Optional
+from datetime import datetime
 
 app = FastAPI()
 
@@ -53,4 +55,40 @@ async def get_listings_count(brand_name: str):
     return {
         "brand": brand_name,
         "count": count
+    }
+
+@app.get("/api/{brand_name}/{time_unit}/listings/count")
+async def get_listings_timeframe(
+    brand_name: str,
+    time_unit: Literal["weekly", "monthly", "yearly"],
+    start: Optional[str] = None,
+    end: Optional[str] = None
+):
+    try:
+        # Validate dates if provided
+        if start:
+            datetime.strptime(start, "%Y-%m-%d")
+        if end:
+            datetime.strptime(end, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid date format. Use YYYY-MM-DD"
+        )
+    
+    data = get_listings_by_timeframe(
+        df,
+        brand_name,
+        time_unit,
+        start,
+        end
+    )
+    
+    if not data:
+        raise HTTPException(status_code=404, detail="No data found for brand")
+    
+    return {
+        "brand": brand_name,
+        "time_unit": time_unit,
+        "data": data
     }
