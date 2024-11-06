@@ -25,9 +25,10 @@ uv pip install -e .
 
 ## Running the Server
 
+(MAKE SURE YOU ARE CURRENTLY IN THE PARENT FOLDER OF backend SO WE CAN LOAD THE MODULES RIGHT)
 Start the FastAPI server with:
 ```bash
-uvicorn main:app --reload
+uvicorn backend.main:app --reload
 ```
 
 The server will be available at `http://localhost:8000`
