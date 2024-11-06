@@ -21,7 +21,7 @@ const Command = React.forwardRef<
 ))
 Command.displayName = CommandPrimitive.displayName
 
-interface CommandDialogProps extends DialogProps {}
+type CommandDialogProps = DialogProps
 
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
@@ -73,7 +73,7 @@ const CommandEmpty = React.forwardRef<
 >((props, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className="py-6 text-center text-sm"
+    className="py-6 text-center text-sm text-zinc-400"
     {...props}
   />
 ))
