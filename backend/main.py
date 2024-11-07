@@ -32,12 +32,14 @@ async def root():
 
 
 @app.get("/brands")
-async def get_brands():
-    # Get unique brands and remove empty values
-    brands = df["Brand"].dropna().unique().tolist()
-    # Sort brands alphabetically
-    brands.sort()
-    return {"brands": brands}
+async def get_brands() -> dict[str, list[str]]:
+    # Get brand counts
+    brand_counts = df["Brand"].value_counts()
+    # Filter brands with at least certain number of entries
+    qualified_brands = brand_counts[brand_counts >= 100].index.tolist()
+    # Sort brands by count
+    qualified_brands.sort(key=lambda x: brand_counts[x], reverse=True)
+    return {"brands": qualified_brands}
 
 
 @app.get("/api/{brand_name}/{time_unit}/pricing/average")
