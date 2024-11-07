@@ -12,9 +12,10 @@ import {
 interface PieChartProps {
     data: { name: string; value: number }[]
     isLoading?: boolean
+    onBrandSelect?: (brand: string) => void
 }
 
-export function PieChartComponent({ data, isLoading }: PieChartProps) {
+export function PieChartComponent({ data, isLoading, onBrandSelect }: PieChartProps) {
     if (isLoading) {
         return <div>Loading...</div>
     }
@@ -36,6 +37,13 @@ export function PieChartComponent({ data, isLoading }: PieChartProps) {
         return acc
     }, {} as Record<string, { label: string; color: string; dataKey: string }>)
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleClick = (data: any) => {
+        if (onBrandSelect && data.name) {
+            onBrandSelect(data.name);
+        }
+    };
+
     return (
         <ChartContainer config={chartConfig} className="min-h-[400px] w-full">
             <RechartsPieChart>
@@ -47,6 +55,7 @@ export function PieChartComponent({ data, isLoading }: PieChartProps) {
                     outerRadius={100}
                     paddingAngle={2}
                     dataKey="value"
+                    onClick={handleClick}
                 >
                     {data.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

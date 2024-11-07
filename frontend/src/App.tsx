@@ -101,7 +101,7 @@ function App() {
         {!selectedBrand && brandsData.length > 0 && (
           <div className="mt-8 w-full max-w-lg mx-auto">
             <h3 className="text-lg font-semibold mb-4 text-zinc-100">Top 10 Brands Distribution</h3>
-            <PieChartComponent data={pieChartData} />
+            <PieChartComponent data={pieChartData} onBrandSelect={handleSelectBrand} />
           </div>
         )}
       </div>
