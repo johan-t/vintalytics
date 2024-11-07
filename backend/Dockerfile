@@ -5,10 +5,10 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy the entire backend directory
-COPY . /app/backend/src/
+COPY . /app/backend/src/backend
 
 # Set the working directory to where we copied the backend
-WORKDIR /app/backend/src
+WORKDIR /app/backend/src/backend
 
 # Install dependencies
 RUN pip install --no-cache-dir uv && \
