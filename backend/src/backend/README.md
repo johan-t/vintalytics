@@ -132,3 +132,67 @@ Response format:
     }
 }
 ```
+
+### Similarity Analysis Endpoint
+
+This AI-powered endpoint finds similar listings based on keyword combinations and provides detailed price analysis.
+
+Example usage:
+```bash
+# Find similar listings for vintage leather jacket
+curl "http://localhost:8000/api/ai/similar-listings/vintage,leather,jacket"
+
+# Find similar sneakers
+curl "http://localhost:8000/api/ai/similar-listings/nike,sneakers,white"
+```
+
+Response format:
+```json
+{
+    "keywords": ["vintage", "leather", "jacket"],
+    "analysis": {
+        "average_price": 85.50,
+        "median_price": 79.99,
+        "min_price": 45.00,
+        "max_price": 150.00,
+        "count": 20,
+        "price_ranges": [
+            {
+                "range": "45.00-65.00",
+                "count": 5,
+                "average": 55.20
+            },
+            {
+                "range": "65.01-85.00",
+                "count": 8,
+                "average": 75.40
+            },
+            {
+                "range": "85.01-105.00",
+                "count": 4,
+                "average": 95.30
+            },
+            {
+                "range": "105.01-150.00",
+                "count": 3,
+                "average": 125.80
+            }
+        ],
+        "similar_items": [
+            {
+                "Title": "Vintage Brown Leather Jacket",
+                "Price": 89.99,
+                "Brand": "Zara",
+                "similarity": 0.875
+            }
+        ]
+    }
+}
+```
+
+The similarity analysis provides:
+- Price statistics (average, median, min, max)
+- Count of similar items found
+- Price range distribution with item counts and averages
+- Top 10 most similar items with similarity scores
+- Cross-brand matching for better price comparison

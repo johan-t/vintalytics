@@ -11,6 +11,7 @@ from backend.modules.keyword_analysis import (
     get_top_keywords,
     get_keyword_price_analysis,
 )
+from backend.modules.ai_price_analysis import ListingPriceAnalyzer
 
 app = FastAPI()
 
@@ -24,12 +25,8 @@ app.add_middleware(
 )
 
 # Choose your data source
-USE_BIGQUERY = True  # Set to True to use BigQuery
 
-if USE_BIGQUERY:
-    df = load_data(source="bigquery", project_id="aihack24ber-8510")
-else:
-    df = load_data(source="csv")
+df = load_data()
 
 
 @app.get("/")
@@ -128,3 +125,19 @@ async def get_keyword_analysis(brand_name: str, keywords: str):
         )
 
     return {"brand": brand_name, "keywords": keyword_list, "analysis": analysis}
+
+# Add to FastAPI endpoints
+@app.get("/api/ai/similar-listings/{keywords}")
+async def get_similar_listings(keywords: str):
+    keywords_list = keywords.split(',')
+    analyzer = ListingPriceAnalyzer()
+    analyzer.load_and_prepare_data(df)  # df from main.py
+    
+    results = analyzer.find_similar_listings(keywords_list)
+    if not results:
+        raise HTTPException(status_code=404, detail="No similar listings found")
+        
+    return {
+        "keywords": keywords_list,
+        "analysis": results
+    }

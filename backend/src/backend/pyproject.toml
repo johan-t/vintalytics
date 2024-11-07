@@ -11,6 +11,7 @@ dependencies = [
     "google-cloud-bigquery>=3.26.0",
     "pandas>=2.0.0",
     "pillow>=11.0.0",
+    "scikit-learn>=1.5.2",
     "tqdm>=4.67.0",
     "uvicorn>=0.27.0",
     "vertexai>=1.71.1",

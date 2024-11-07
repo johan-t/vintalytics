@@ -12,7 +12,8 @@ def load_data() -> pd.DataFrame:
     base_dir = os.path.dirname(
         os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     )
-    dataset_path = os.path.join(base_dir, "dataset", "*.csv")
+    dataset_path = os.path.join(base_dir, "src/backend/dataset", "*.csv")
+    print(dataset_path)
 
     # Get all CSV files from dataset folder
     csv_files = glob.glob(dataset_path)
