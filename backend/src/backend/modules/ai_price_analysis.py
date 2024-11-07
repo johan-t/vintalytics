@@ -7,7 +7,7 @@ from typing import List, Dict
 class ListingPriceAnalyzer:
     def __init__(self):
         self.vectorizer = TfidfVectorizer(
-            stop_words='english',
+            stop_words='german',
             min_df=1,
             ngram_range=(1, 3),
             max_features=5000
