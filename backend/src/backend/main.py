@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, List, Dict
 from datetime import datetime
 
 from fastapi import FastAPI, HTTPException
@@ -34,14 +34,19 @@ async def root():
 
 
 @app.get("/api/brands")
-async def get_brands() -> dict[str, list[str]]:
+async def get_brands() -> Dict[str, List[Dict[str, int | str]]]:
     # Get brand counts
     brand_counts = df["Brand"].value_counts()
     # Filter brands with at least certain number of entries
-    qualified_brands = brand_counts[brand_counts >= 100].index.tolist()
-    # Sort brands by count
-    qualified_brands.sort(key=lambda x: brand_counts[x], reverse=True)
-    return {"brands": qualified_brands}
+    qualified_brands = brand_counts[brand_counts >= 100]
+    # Convert to list of dictionaries with brand and count
+    brands_list = [
+        {"brand": brand, "count": int(count)}
+        for brand, count in qualified_brands.items()
+    ]
+    # Sort by count descending
+    brands_list.sort(key=lambda x: x["count"], reverse=True)
+    return {"brands": brands_list}
 
 
 @app.get("/api/{brand_name}/{time_unit}/pricing/average")

@@ -13,7 +13,7 @@ import {
 import ItemOverview from "@/components/pages/ItemOverview";
 
 interface BrandsResponse {
-  brands: string[];
+  brands: { brand: string; count: number }[];
 }
 
 function App() {
@@ -28,8 +28,8 @@ function App() {
       try {
         const response = await fetch(`${config.apiUrl}/api/brands`);
         const data: BrandsResponse = await response.json();
-        setBrands(data.brands);
-        setFilteredBrands(data.brands.slice(0, 15));
+        setBrands(data.brands.map(brand => brand.brand));
+        setFilteredBrands(data.brands.slice(0, 15).map(brand => brand.brand));
       } catch (error) {
         console.error('Error fetching brands:', error);
       }
