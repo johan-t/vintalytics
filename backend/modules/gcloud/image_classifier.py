@@ -18,10 +18,10 @@ def classify_image(title: str, image_path: str):
     
     Analyze the image and title, then return a JSON object with the following structure:
     {{
-        "categories": "string",  // Main categories like "Shoes", "Tops", "Bottoms", "Dresses", "Outerwear", "Accessories"
+        "categories": "string",  // Main categories like "Shoes", "Tops", "Bottoms", "Dresses", "Outerwear", "Accessories" and others. Try to find other categories if possible.
         "colors": ["string"],  // Array of colors present in the item
         "materials": ["string"],  // Array of materials like "Leather", "Cotton", "Denim"
-        "styles": ["string"]  // Array of styles descriptors like "Casual", "Formal", "Sporty"
+        "styles": ["string"]  // Array of styles descriptors like "Casual", "Formal", "Sporty", try to get multiple styles if possible and other styles if possible.
     }}
     
     The title is: {title}
