@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { BarChartComponent } from '@/components/ui/barchart'
 import { ChartConfig } from "../ui/chart"
+import { config } from "@/env";
 
 interface TimeSeriesData {
     date: string;
@@ -33,7 +34,7 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
             const encodedBrand = encodeURIComponent(brand);
             const endpoint = dataType === 'listings' ? 'count' : 'average';
             const response = await fetch(
-                `http://localhost:8000/api/${encodedBrand}/monthly/${dataType}/${endpoint}`
+                `${config.apiUrl}/api/${encodedBrand}/monthly/${dataType}/${endpoint}`
             );
             const data = await response.json();
 

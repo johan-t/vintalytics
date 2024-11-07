@@ -31,7 +31,7 @@ async def root():
     return {"message": "Vintalytics API"}
 
 
-@app.get("/brands")
+@app.get("/api/brands")
 async def get_brands() -> dict[str, list[str]]:
     # Get brand counts
     brand_counts = df["Brand"].value_counts()
