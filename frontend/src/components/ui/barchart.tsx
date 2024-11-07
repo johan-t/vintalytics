@@ -9,25 +9,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-
-interface ChartData {
-  month: string
-  listings: number
-}
+import { ChartData } from "@/components/pages/ItemOverview"
 
 interface BarChartProps {
   data: ChartData[]
   isLoading: boolean
+  chartConfig: ChartConfig
 }
 
-const chartConfig = {
-  listings: {
-    label: "Listings",
-    color: "#2563eb",
-  },
-} satisfies ChartConfig
-
-export function BarChartComponent({ data, isLoading }: BarChartProps) {
+export function BarChartComponent({ data, isLoading, chartConfig }: BarChartProps) {
   if (isLoading) {
     return <div>Loading...</div>
   }

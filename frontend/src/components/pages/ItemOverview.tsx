@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { BarChartComponent } from '@/components/ui/barchart'
+import { ChartConfig } from "../ui/chart"
 
 interface ItemOverviewProps {
     brand: string
@@ -10,7 +11,7 @@ interface ListingData {
     count: number
 }
 
-interface ChartData {
+export interface ChartData {
     month: string
     listings: number
 }
@@ -20,7 +21,7 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchListings = async () => {
             try {
                 const encodedBrand = encodeURIComponent(brand)
                 const response = await fetch(
@@ -42,15 +43,22 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
             }
         }
 
-        fetchData()
+        fetchListings()
     }, [brand])
+
+    const chartConfig = {
+        listings: {
+            label: "Listings",
+            color: "#2563eb",
+        },
+    } satisfies ChartConfig
 
     return (
         <div className="space-y-8">
             <h1 className="text-2xl font-bold text-zinc-100">{brand}</h1>
             <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
                 <h2 className="text-lg font-semibold text-zinc-100 mb-4">Monthly Listings</h2>
-                <BarChartComponent data={chartData} isLoading={isLoading} />
+                <BarChartComponent data={chartData} isLoading={isLoading} chartConfig={chartConfig} />
             </div>
         </div>
     )
