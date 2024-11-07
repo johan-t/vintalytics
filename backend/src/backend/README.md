@@ -31,6 +31,12 @@ Start the FastAPI server with:
 uvicorn backend.main:app --reload
 ```
 
+or use docker:
+```bash
+docker build -t vintalytics-backend .
+docker run -p 8000:8000 vintalytics-backend
+```
+
 The server will be available at `http://localhost:8000`
 
 ## Available Endpoints

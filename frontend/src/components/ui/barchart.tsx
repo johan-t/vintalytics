@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import {
   ChartConfig,
@@ -11,64 +10,25 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-interface ListingData {
-  date: string
-  count: number
-}
-
-interface ChartData {
-  month: string
-  listings: number
-}
-
 interface BarChartProps {
-  brand: string
+  data: unknown[]
+  isLoading: boolean
+  chartConfig: ChartConfig
 }
 
-const chartConfig = {
-  listings: {
-    label: "Listings",
-    color: "#2563eb",
-  },
-} satisfies ChartConfig
-
-export function BarChartComponent({ brand }: BarChartProps) {
-  const [chartData, setChartData] = useState<ChartData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const encodedBrand = encodeURIComponent(brand)
-        const response = await fetch(
-          `http://localhost:8000/api/${encodedBrand}/monthly/listings/count`
-        )
-        const data = await response.json()
-
-        // Transform API data to chart format
-        const transformedData: ChartData[] = data.data.map((item: ListingData) => ({
-          month: new Date(item.date).toLocaleString('default', { month: 'long' }),
-          listings: item.count
-        }))
-
-        setChartData(transformedData)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [brand])
-
+export function BarChartComponent({ data, isLoading, chartConfig }: BarChartProps) {
   if (isLoading) {
     return <div>Loading...</div>
   }
 
+  // Get the first config entry's dataKey and color
+  const firstConfig = Object.values(chartConfig)[0]
+  const dataKey = firstConfig?.dataKey || 'listings'
+  const color = firstConfig?.color || 'var(--color-listings)'
+
   return (
     <ChartContainer config={chartConfig} className="min-h-[400px] w-full">
-      <BarChart accessibilityLayer data={chartData}>
+      <BarChart accessibilityLayer data={data}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="month"
@@ -84,7 +44,7 @@ export function BarChartComponent({ brand }: BarChartProps) {
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
-        <Bar dataKey="listings" fill="var(--color-listings)" radius={4} />
+        <Bar dataKey={dataKey} fill={color} radius={4} />
       </BarChart>
     </ChartContainer>
   )

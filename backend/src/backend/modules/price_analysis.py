@@ -1,20 +1,60 @@
-from urllib.parse import unquote
+from datetime import datetime
+from typing import Literal, Optional
 import pandas as pd
+from urllib.parse import unquote
 
-def calculate_average_price(df: pd.DataFrame, brand: str) -> float:
+TimeUnit = Literal["weekly", "monthly", "yearly"]
+
+
+def calculate_average_price(
+    df: pd.DataFrame,
+    brand: str,
+    time_unit: TimeUnit,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+) -> list[dict]:
     """
-    Calculate the average price for a specific brand.
-    Returns None if brand not found or no valid prices.
+    Calculate average prices grouped by time unit within a date range.
+    Dates should be in ISO format: YYYY-MM-DD
+    Returns a list of dictionaries containing date and average price.
     """
     # Clean brand name from URL encoding
     brand = unquote(brand)
-    
-    # Filter dataframe for the specific brand
-    brand_items = df[df['Brand'].str.lower() == brand.lower()]
-    
+
+    # Filter for brand
+    brand_items = df[df["Brand"].str.lower() == brand.lower()]
+
     if brand_items.empty:
-        return None
-    
-    # Calculate average price
-    average_price = brand_items['Price'].mean()
-    return round(average_price, 2) 
+        return []
+
+    # Convert Item_Date to datetime
+    brand_items["Item_Date"] = pd.to_datetime(brand_items["Item_Date"])
+
+    # Apply date filters if provided
+    if start_date:
+        start = pd.to_datetime(start_date)
+        brand_items = brand_items[brand_items["Item_Date"] >= start]
+    if end_date:
+        end = pd.to_datetime(end_date)
+        brand_items = brand_items[brand_items["Item_Date"] <= end]
+
+    # Group by time unit
+    if time_unit == "weekly":
+        grouped = brand_items.groupby(pd.Grouper(key="Item_Date", freq="W"))
+    elif time_unit == "monthly":
+        grouped = brand_items.groupby(pd.Grouper(key="Item_Date", freq="M"))
+    else:  # yearly
+        grouped = brand_items.groupby(pd.Grouper(key="Item_Date", freq="Y"))
+
+    # Format results
+    result = []
+    for date, group in grouped:
+        if not group.empty:
+            result.append(
+                {
+                    "date": date.strftime("%Y-%m-%d"),
+                    "price": round(group["Price"].mean(), 2),
+                }
+            )
+
+    return result

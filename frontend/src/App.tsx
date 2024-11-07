@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { config } from "@/env";
 import {
   Command,
   CommandEmpty,
@@ -8,15 +8,16 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
+import { PieChartComponent } from "@/components/ui/piechart";
 import ItemOverview from "@/components/pages/ItemOverview";
 
 interface BrandsResponse {
-  brands: string[];
+  brands: { brand: string; count: number }[];
 }
 
 function App() {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [brands, setBrands] = useState<string[]>([]);
+  const [brandsData, setBrandsData] = useState<{ brand: string; count: number }[]>([]);
   const [filteredBrands, setFilteredBrands] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [key, setKey] = useState(0);
@@ -24,10 +25,10 @@ function App() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const response = await fetch("http://localhost:8000/brands");
+        const response = await fetch(`${config.apiUrl}/api/brands`);
         const data: BrandsResponse = await response.json();
-        setBrands(data.brands);
-        setFilteredBrands(data.brands.slice(0, 15));
+        setBrandsData(data.brands);
+        setFilteredBrands(data.brands.slice(0, 15).map(brand => brand.brand));
       } catch (error) {
         console.error('Error fetching brands:', error);
       }
@@ -38,13 +39,13 @@ function App() {
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
-    
+
     if (value.trim() === "") {
-      setFilteredBrands(brands.slice(0, 15));
+      setFilteredBrands(brandsData.slice(0, 15).map(brand => brand.brand));
     } else {
-      const filtered = brands.filter(brand => 
-        brand.toLowerCase().includes(value.toLowerCase())
-      );
+      const filtered = brandsData
+        .filter(brand => brand.brand.toLowerCase().includes(value.toLowerCase()))
+        .map(brand => brand.brand);
       setFilteredBrands(filtered);
     }
   };
@@ -55,10 +56,18 @@ function App() {
     setKey(prev => prev + 1);
   };
 
+  // Transform data for pie chart
+  const pieChartData = brandsData
+    .slice(0, 10)
+    .map(item => ({
+      name: item.brand,
+      value: item.count
+    }));
+
   return (
     <div className="min-h-screen w-full bg-zinc-950 p-4">
-      <div className={`transition-all duration-300 ${selectedBrand ? 'pt-4' : 'flex items-center justify-center min-h-screen'}`}>
-        <Command 
+      <div className={`transition-all duration-300 ${selectedBrand ? 'pt-4' : 'flex flex-col items-center justify-center min-h-screen'}`}>
+        <Command
           key={key}
           className="rounded-lg border max-w-lg w-full border-zinc-800 bg-zinc-950 mx-auto"
         >
@@ -88,6 +97,13 @@ function App() {
             </CommandList>
           )}
         </Command>
+
+        {!selectedBrand && brandsData.length > 0 && (
+          <div className="mt-8 w-full max-w-lg mx-auto">
+            <h3 className="text-lg font-semibold mb-4 text-zinc-100">Top 10 Brands Distribution</h3>
+            <PieChartComponent data={pieChartData} onBrandSelect={handleSelectBrand} />
+          </div>
+        )}
       </div>
 
       {selectedBrand && <ItemOverview brand={selectedBrand} />}
