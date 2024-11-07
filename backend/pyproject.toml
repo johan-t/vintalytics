@@ -5,8 +5,12 @@ description = "Backend for vintalytics"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "colorama>=0.4.6",
     "fastapi>=0.115.4",
+    "google-cloud-aiplatform>=1.71.1",
     "google-cloud-bigquery>=3.26.0",
     "pandas>=2.0.0",
+    "pillow>=11.0.0",
     "uvicorn>=0.27.0",
+    "vertexai>=1.71.1",
 ]

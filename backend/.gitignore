@@ -1,2 +1,6 @@
 __pycache__
 .venv
+images/
+images_between/
+images_rest/
+backup/

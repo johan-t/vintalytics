@@ -1,5 +1,4 @@
 from fastapi import FastAPI, HTTPException
-from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from backend.modules.data_loader import load_data
 from backend.modules.price_analysis import calculate_average_price
@@ -22,8 +21,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load data into memory
-df = load_data()
+# Choose your data source
+USE_BIGQUERY = True  # Set to True to use BigQuery
+
+if USE_BIGQUERY:
+    df = load_data(source="bigquery", project_id="aihack24ber-8510")
+else:
+    df = load_data(source="csv")
 
 
 @app.get("/")
