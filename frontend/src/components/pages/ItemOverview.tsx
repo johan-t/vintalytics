@@ -62,7 +62,9 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
                 [dataType === 'listings' ? 'listings' : 'price']: item[valueKey] as number
             }));
 
-            setData(transformedData);
+            const uniqueData = Array.from(new Map(transformedData.map(item => [item.month, item])).values());
+
+            setData(uniqueData);
         } catch (error) {
             console.error(`Error fetching ${dataType} data:`, error);
         } finally {
