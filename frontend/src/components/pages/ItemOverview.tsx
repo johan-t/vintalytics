@@ -1,61 +1,60 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { BarChartComponent } from '@/components/ui/barchart'
 import { ChartConfig } from "../ui/chart"
 
+interface TimeSeriesData {
+    date: string;
+    [key: string]: string | number;
+}
+
+interface ChartData {
+    month: string;
+    [key: string]: string | number;
+}
+
 interface ItemOverviewProps {
-    brand: string
+    brand: string;
 }
 
-interface ListingData {
-    date: string
-    count: number
-}
-
-interface PriceData {
-    date: string
-    price: number
-}
-
-interface ListingsChartData {
-    month: string
-    listings: number
-}
-
-interface PriceChartData {
-    month: string
-    price: number
-}
+type DataType = 'listings' | 'pricing';
+type ValueKey = 'count' | 'price';
 
 const ItemOverview = ({ brand }: ItemOverviewProps) => {
-    const [listingsChartData, setListingsChartData] = useState<ListingsChartData[]>([])
-    const [priceChartData, setPriceChartData] = useState<PriceChartData[]>([])
-    const [isLoading, setIsLoading] = useState(true)
+    const [listingsChartData, setListingsChartData] = useState<ChartData[]>([]);
+    const [priceChartData, setPriceChartData] = useState<ChartData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchTimeSeriesData = useCallback(async (
+        dataType: DataType,
+        valueKey: ValueKey,
+        setData: (data: ChartData[]) => void
+    ) => {
+        try {
+            const encodedBrand = encodeURIComponent(brand);
+            const endpoint = dataType === 'listings' ? 'count' : 'average';
+            const response = await fetch(
+                `http://localhost:8000/api/${encodedBrand}/monthly/${dataType}/${endpoint}`
+            );
+            const data = await response.json();
+
+            // Transform API data to chart format
+            const transformedData: ChartData[] = data.data.map((item: TimeSeriesData) => ({
+                month: new Date(item.date).toLocaleString('default', { month: 'long' }),
+                [dataType === 'listings' ? 'listings' : 'price']: item[valueKey] as number
+            }));
+
+            setData(transformedData);
+        } catch (error) {
+            console.error(`Error fetching ${dataType} data:`, error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [brand]);
 
     useEffect(() => {
-        const fetchListings = async () => {
-            try {
-                const encodedBrand = encodeURIComponent(brand)
-                const response = await fetch(
-                    `http://localhost:8000/api/${encodedBrand}/monthly/listings/count`
-                )
-                const data = await response.json()
-
-                // Transform API data to chart format
-                const transformedData: ListingsChartData[] = data.data.map((item: ListingData) => ({
-                    month: new Date(item.date).toLocaleString('default', { month: 'long' }),
-                    listings: item.count
-                }))
-
-                setListingsChartData(transformedData)
-            } catch (error) {
-                console.error('Error fetching data:', error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        fetchListings()
-    }, [brand])
+        fetchTimeSeriesData('listings', 'count', setListingsChartData);
+        fetchTimeSeriesData('pricing', 'price', setPriceChartData);
+    }, [brand, fetchTimeSeriesData]);
 
     const listingsChartConfig = {
         listings: {
@@ -67,37 +66,11 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
 
     const priceChartConfig = {
         listings: {
-            label: "Price",
+            label: "Pricing",
             color: "#2563eb",
             dataKey: "price"
         },
     } satisfies ChartConfig
-
-    useEffect(() => {
-        const fetchPricing = async () => {
-            try {
-                const encodedBrand = encodeURIComponent(brand)
-                const response = await fetch(
-                    `http://localhost:8000/api/${encodedBrand}/monthly/pricing/average`
-                )
-                const data = await response.json()
-
-                // Transform API data to chart format
-                const transformedData: PriceChartData[] = data.data.map((item: PriceData) => ({
-                    month: new Date(item.date).toLocaleString('default', { month: 'long' }),
-                    price: item.price
-                }))
-
-                setPriceChartData(transformedData)
-                console.log(transformedData)
-            } catch (error) {
-                console.error('Error fetching data:', error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        fetchPricing()
-    }, [brand])
 
     return (
         <div className="space-y-8">
