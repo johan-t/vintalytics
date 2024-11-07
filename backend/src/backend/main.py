@@ -4,14 +4,14 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.modules.data_loader import load_data
-from backend.modules.price_analysis import calculate_average_price
-from backend.modules.listings_analysis import get_listings_by_timeframe
-from backend.modules.keyword_analysis import (
+from src.backend.modules.data_loader import load_data
+from src.backend.modules.price_analysis import calculate_average_price
+from src.backend.modules.listings_analysis import get_listings_by_timeframe
+from src.backend.modules.keyword_analysis import (
     get_top_keywords,
     get_keyword_price_analysis,
 )
-from backend.modules.ai_price_analysis import ListingPriceAnalyzer
+from src.backend.modules.ai_price_analysis import ListingPriceAnalyzer
 
 app = FastAPI()
 
