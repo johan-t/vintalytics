@@ -9,10 +9,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { ChartData } from "@/components/pages/ItemOverview"
 
 interface BarChartProps {
-  data: ChartData[]
+  data: unknown[]
   isLoading: boolean
   chartConfig: ChartConfig
 }
@@ -21,6 +20,9 @@ export function BarChartComponent({ data, isLoading, chartConfig }: BarChartProp
   if (isLoading) {
     return <div>Loading...</div>
   }
+
+  // Get the first config entry's dataKey
+  const dataKey = Object.values(chartConfig)[0]?.dataKey || 'listings'
 
   return (
     <ChartContainer config={chartConfig} className="min-h-[400px] w-full">
@@ -40,7 +42,7 @@ export function BarChartComponent({ data, isLoading, chartConfig }: BarChartProp
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
-        <Bar dataKey="listings" fill="var(--color-listings)" radius={4} />
+        <Bar dataKey={dataKey} fill={"var(--color-listings)"} radius={4} />
       </BarChart>
     </ChartContainer>
   )
