@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import {
   ChartConfig,
@@ -11,18 +10,14 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-interface ListingData {
-  date: string
-  count: number
-}
-
 interface ChartData {
   month: string
   listings: number
 }
 
 interface BarChartProps {
-  brand: string
+  data: ChartData[]
+  isLoading: boolean
 }
 
 const chartConfig = {
@@ -32,43 +27,14 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function BarChartComponent({ brand }: BarChartProps) {
-  const [chartData, setChartData] = useState<ChartData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const encodedBrand = encodeURIComponent(brand)
-        const response = await fetch(
-          `http://localhost:8000/api/${encodedBrand}/monthly/listings/count`
-        )
-        const data = await response.json()
-
-        // Transform API data to chart format
-        const transformedData: ChartData[] = data.data.map((item: ListingData) => ({
-          month: new Date(item.date).toLocaleString('default', { month: 'long' }),
-          listings: item.count
-        }))
-
-        setChartData(transformedData)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [brand])
-
+export function BarChartComponent({ data, isLoading }: BarChartProps) {
   if (isLoading) {
     return <div>Loading...</div>
   }
 
   return (
     <ChartContainer config={chartConfig} className="min-h-[400px] w-full">
-      <BarChart accessibilityLayer data={chartData}>
+      <BarChart accessibilityLayer data={data}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="month"
