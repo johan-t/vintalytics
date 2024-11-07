@@ -5,9 +5,13 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies including the missing Rollup dependency
+# Install dependencies with architecture detection
 RUN npm install && \
-    npm install @rollup/rollup-linux-x64-musl
+    if [ "$(uname -m)" = "aarch64" ]; then \
+    npm install @rollup/rollup-linux-arm64-musl; \
+    else \
+    npm install @rollup/rollup-linux-x64-musl; \
+    fi
 
 # Copy source files
 COPY . .
