@@ -21,8 +21,10 @@ export function BarChartComponent({ data, isLoading, chartConfig }: BarChartProp
     return <div>Loading...</div>
   }
 
-  // Get the first config entry's dataKey
-  const dataKey = Object.values(chartConfig)[0]?.dataKey || 'listings'
+  // Get the first config entry's dataKey and color
+  const firstConfig = Object.values(chartConfig)[0]
+  const dataKey = firstConfig?.dataKey || 'listings'
+  const color = firstConfig?.color || 'var(--color-listings)'
 
   return (
     <ChartContainer config={chartConfig} className="min-h-[400px] w-full">
@@ -42,7 +44,7 @@ export function BarChartComponent({ data, isLoading, chartConfig }: BarChartProp
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
-        <Bar dataKey={dataKey} fill={"var(--color-listings)"} radius={4} />
+        <Bar dataKey={dataKey} fill={color} radius={4} />
       </BarChart>
     </ChartContainer>
   )

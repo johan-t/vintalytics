@@ -65,8 +65,8 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
     } satisfies ChartConfig
 
     const priceChartConfig = {
-        listings: {
-            label: "Pricing",
+        price: {
+            label: "Average Price",
             color: "#2563eb",
             dataKey: "price"
         },
