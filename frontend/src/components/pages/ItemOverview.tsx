@@ -42,6 +42,7 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [tagAnalysis, setTagAnalysis] = useState<KeywordAnalysis | null>(null);
     const [suggestedTags, setSuggestedTags] = useState<{ word: string; count: number }[]>([]);
+    const [isCommandOpen, setIsCommandOpen] = useState(false);
 
     const fetchTimeSeriesData = useCallback(async (
         dataType: DataType,
@@ -139,25 +140,31 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
 
             <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
                 <h2 className="text-lg font-semibold text-zinc-100 mb-4">Search by Tags</h2>
-                <Command className="rounded-lg border border-zinc-800 bg-zinc-950">
+                <Command
+                    className="rounded-lg border border-zinc-800 bg-zinc-950"
+                    shouldFilter={true}
+                    onClick={() => setIsCommandOpen(true)}
+                >
                     <CommandInput
                         placeholder="Search tags..."
                         className="border-none focus:ring-0 text-zinc-100"
                     />
-                    <CommandList>
-                        <CommandEmpty>No tags found.</CommandEmpty>
-                        <CommandGroup heading="Suggested Tags">
-                            {suggestedTags.map((tag) => (
-                                <CommandItem
-                                    key={tag.word}
-                                    onSelect={() => handleSelectTag(tag.word)}
-                                    className="text-zinc-100 cursor-pointer"
-                                >
-                                    {tag.word} ({tag.count})
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    </CommandList>
+                    {isCommandOpen && (
+                        <CommandList>
+                            <CommandEmpty>No tags found.</CommandEmpty>
+                            <CommandGroup heading="Suggested Tags">
+                                {suggestedTags.map((tag) => (
+                                    <CommandItem
+                                        key={tag.word}
+                                        onSelect={() => handleSelectTag(tag.word)}
+                                        className="text-zinc-100 cursor-pointer"
+                                    >
+                                        {tag.word} ({tag.count})
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    )}
                 </Command>
 
                 {selectedTags.length > 0 && (
