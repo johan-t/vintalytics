@@ -40,18 +40,30 @@ async def get_brands():
     return {"brands": brands}
 
 
-@app.get("/api/{brand_name}/pricing/average")
-async def get_average_price(brand_name: str):
-    average_price = calculate_average_price(df, brand_name)
+@app.get("/api/{brand_name}/{time_unit}/pricing/average")
+async def get_average_price_timeframe(
+    brand_name: str,
+    time_unit: Literal["weekly", "monthly", "yearly"],
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+):
+    try:
+        # Validate dates if provided
+        if start:
+            datetime.strptime(start, "%Y-%m-%d")
+        if end:
+            datetime.strptime(end, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail="Invalid date format. Use YYYY-MM-DD"
+        )
 
-    if average_price is None:
-        raise HTTPException(status_code=404, detail="Brand not found")
+    data = calculate_average_price(df, brand_name, time_unit, start, end)
 
-    return {
-        "brand": brand_name,
-        "average_price": average_price,
-        "currency": "EUR",  # Assuming all prices are in EUR based on your dataset
-    }
+    if not data:
+        raise HTTPException(status_code=404, detail="No data found for brand")
+
+    return {"brand": brand_name, "time_unit": time_unit, "data": data}
 
 
 @app.get("/api/{brand_name}/{time_unit}/listings/count")
