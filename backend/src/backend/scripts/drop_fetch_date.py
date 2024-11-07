@@ -2,15 +2,13 @@ import pandas as pd
 import glob
 import os
 
-def modify_columns():
+def remove_columns():
     """
-    Modify CSV files:
-    - Remove Fetch_Date column
-    - Add classification columns (Category, Colors, Materials, Styles)
-    Creates a backup of original files before modifying.
+    Remove Category and Currency columns from all CSV files.
+    Creates a backup before modifying.
     """
     # Get all CSV files from dataset folder
-    csv_files = glob.glob("backend/dataset/*.csv")
+    csv_files = glob.glob("backend/src/backend/dataset/*.csv")
     
     if not csv_files:
         print("No CSV files found in dataset folder")
@@ -23,8 +21,8 @@ def modify_columns():
     processed_count = 0
     skipped_count = 0
     
-    # New columns to add
-    new_columns = ['Category', 'Colors', 'Materials', 'Styles']
+    # Columns to remove
+    columns_to_remove = ['Category', 'Currency']
     
     for file in csv_files:
         try:
@@ -33,28 +31,29 @@ def modify_columns():
             
             # Create backup
             filename = os.path.basename(file)
-            backup_path = os.path.join(backup_folder, f"backup_{filename}")
+            backup_path = os.path.join(backup_folder, f"backup_remove_cols_{filename}")
             df.to_csv(backup_path, index=False)
             
-            # Drop Fetch_Date column if it exists
-            if 'Fetch_Date' in df.columns:
-                df = df.drop(columns=['Fetch_Date'])
-                print(f"Removed Fetch_Date from: {filename}")
+            # Remove specified columns if they exist
+            columns_removed = []
+            for column in columns_to_remove:
+                if column in df.columns:
+                    df = df.drop(columns=[column])
+                    columns_removed.append(column)
             
-            # Add new columns if they don't exist
-            for column in new_columns:
-                if column not in df.columns:
-                    df[column] = ''  # Empty string for initial values
-                    print(f"Added {column} column to: {filename}")
-            
-            # Save modified file
-            df.to_csv(file, index=False)
-            
-            processed_count += 1
-            print(f"Processed: {filename}")
+            if columns_removed:
+                print(f"Removed columns {', '.join(columns_removed)} from: {filename}")
+                # Save modified file
+                df.to_csv(file, index=False)
+                processed_count += 1
+                print(f"Processed: {filename}")
+            else:
+                print(f"No specified columns found in: {filename}")
+                skipped_count += 1
                 
         except Exception as e:
             print(f"Error processing {os.path.basename(file)}: {str(e)}")
+            skipped_count += 1
     
     print("\nSummary:")
     print(f"Files processed: {processed_count}")
@@ -62,6 +61,6 @@ def modify_columns():
     print(f"Backups saved to: {backup_folder}")
 
 if __name__ == "__main__":
-    print("Starting to modify columns in dataset...")
-    modify_columns()
+    print("Starting to remove columns from dataset...")
+    remove_columns()
     print("Done!")
