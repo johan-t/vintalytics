@@ -113,7 +113,9 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
     }, [fetchTagAnalysis, selectedTags]);
 
     const handleSelectTag = (tag: string) => {
-        if (!selectedTags.includes(tag)) {
+        if (selectedTags.includes(tag)) {
+            setSelectedTags(selectedTags.filter(t => t !== tag));
+        } else {
             setSelectedTags([...selectedTags, tag]);
         }
     };
@@ -173,7 +175,8 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
                             {selectedTags.map((tag) => (
                                 <span
                                     key={tag}
-                                    className="px-2 py-1 rounded-md bg-blue-500 text-white text-sm"
+                                    className="px-2 py-1 rounded-md bg-blue-500 text-white text-sm cursor-pointer hover:bg-blue-600"
+                                    onClick={() => handleSelectTag(tag)}
                                 >
                                     {tag}
                                 </span>
