@@ -106,7 +106,11 @@ function App() {
         )}
       </div>
 
-      {selectedBrand && <ItemOverview brand={selectedBrand} />}
+      {selectedBrand && (
+        <div className="w-full max-w-3xl mx-auto">
+          <ItemOverview brand={selectedBrand} />
+        </div>
+      )}
     </div>
   );
 }
