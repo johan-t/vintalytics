@@ -74,7 +74,7 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
         try {
             const encodedBrand = encodeURIComponent(brand);
             const response = await fetch(
-                `${config.apiUrl}/api/${encodedBrand}/keywords/top/15`
+                `${config.apiUrl}/api/${encodedBrand}/keywords/top/50`
             );
             const data = await response.json();
             setSuggestedTags(data.keywords || []);
@@ -103,10 +103,11 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
     }, [brand, selectedTags]);
 
     useEffect(() => {
-        fetchTimeSeriesData('listings', 'count', setListingsChartData);
-        fetchTimeSeriesData('pricing', 'price', setPriceChartData);
+        fetchTimeSeriesData('listings', 'count', (data) => setListingsChartData(sortDataByMonth(data)));
+        fetchTimeSeriesData('pricing', 'price', (data) => setPriceChartData(sortDataByMonth(data)));
         fetchTopTags();
     }, [brand, fetchTimeSeriesData, fetchTopTags]);
+
 
     useEffect(() => {
         fetchTagAnalysis();
@@ -135,6 +136,14 @@ const ItemOverview = ({ brand }: ItemOverviewProps) => {
             dataKey: "price"
         },
     } satisfies ChartConfig
+
+    const sortDataByMonth = (data: ChartData[]): ChartData[] => {
+        const monthOrder = [
+            "Januar", "Februar", "März", "April", "Mai", "Juni",
+            "Juli", "August", "September", "Oktober", "November", "Dezember"
+        ];
+        return data.sort((a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month));
+    };
 
     return (
         <div className="space-y-8">
