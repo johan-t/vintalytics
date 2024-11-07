@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { config } from "@/env";
+
 
 import {
   Command,
@@ -24,7 +26,7 @@ function App() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const response = await fetch("http://localhost:8000/brands");
+        const response = await fetch(`${config.apiUrl}/api/brands`);
         const data: BrandsResponse = await response.json();
         setBrands(data.brands);
         setFilteredBrands(data.brands.slice(0, 15));
@@ -38,11 +40,11 @@ function App() {
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
-    
+
     if (value.trim() === "") {
       setFilteredBrands(brands.slice(0, 15));
     } else {
-      const filtered = brands.filter(brand => 
+      const filtered = brands.filter(brand =>
         brand.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredBrands(filtered);
@@ -58,7 +60,7 @@ function App() {
   return (
     <div className="min-h-screen w-full bg-zinc-950 p-4">
       <div className={`transition-all duration-300 ${selectedBrand ? 'pt-4' : 'flex items-center justify-center min-h-screen'}`}>
-        <Command 
+        <Command
           key={key}
           className="rounded-lg border max-w-lg w-full border-zinc-800 bg-zinc-950 mx-auto"
         >
